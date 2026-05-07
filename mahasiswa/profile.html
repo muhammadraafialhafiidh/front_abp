@@ -310,6 +310,22 @@
     </div>
   </div>
 
+  <!-- Logout -->
+  <div class="section-card mb-3">
+    <div class="section-card-header">
+      <div class="icon-wrap" style="background:rgba(220,53,69,0.1);">
+        <i class="bi bi-box-arrow-right" style="color:#dc3545;"></i>
+      </div>
+      <h6 style="color:#dc3545;">Keluar Akun</h6>
+    </div>
+    <div class="section-card-body">
+      <p style="font-size:.82rem;color:#888;margin-bottom:.8rem;">Anda akan keluar dari sesi ini dan diarahkan ke halaman login.</p>
+      <button class="btn btn-danger btn-sm rounded-pill px-3" onclick="doLogout()">
+        <i class="bi bi-box-arrow-right me-1"></i>Logout
+      </button>
+    </div>
+  </div>
+
 </div><!-- end content -->
 
 <!-- BOTTOM NAV -->
@@ -435,6 +451,11 @@
 
   function openEditModal()     { modalEditProfil.show(); }
   function openPasswordModal() { modalPassword.show(); }
+
+  function doLogout() {
+    showToast('Berhasil logout. Mengalihkan…', 'secondary');
+    setTimeout(() => { window.location.href = '../index.html'; }, 1500);
+  }
 
   function saveProfile() {
     modalEditProfil.hide();
