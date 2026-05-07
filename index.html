@@ -182,8 +182,8 @@
       <button class="role-btn active" data-role="dosen" onclick="selectRole(this)">
         <i class="bi bi-person-badge-fill"></i> Dosen
       </button>
-      <button class="role-btn" data-role="mahasiswa" onclick="selectRole(this)">
-        <i class="bi bi-person-fill"></i> Mahasiswa
+      <button class="role-btn" data-role="admin" onclick="selectRole(this)">
+        <i class="bi bi-shield-fill"></i> Admin
       </button>
     </div>
 
@@ -240,6 +240,10 @@
       mahasiswa: [
         { username: 'M001', password: 'password' },
         { username: 'M002', password: 'password' },
+      ],
+      admin: [
+        { username: 'superadmin', password: 'admin123' },
+        { username: 'admin',      password: 'admin123' },
       ]
     };
 
@@ -248,7 +252,7 @@
       btn.classList.add('active');
       selectedRole = btn.dataset.role;
       document.getElementById('usernameLabel').textContent =
-        selectedRole === 'dosen' ? 'NIP / Username' : 'NIM / Username';
+        selectedRole === 'mahasiswa' ? 'NIM / Username' : 'Username';
       document.getElementById('alertBox').style.display = 'none';
     }
 
@@ -284,6 +288,8 @@
           setTimeout(() => {
             if (selectedRole === 'dosen') {
               window.location.href = 'dosen/dashboard.html';
+            } else if (selectedRole === 'admin') {
+              window.location.href = 'admin/dashboard.html';
             } else {
               window.location.href = 'mahasiswa/dashboard.html';
             }

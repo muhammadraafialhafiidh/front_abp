@@ -1,0 +1,309 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Laporan Presensi – Ambasen</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <style>
+    :root { --maroon:#800020; --maroon-dark:#5a0016; --sidebar-w:260px; --gray-bg:#f4f6f9; }
+    body { font-family:'Segoe UI',sans-serif; background:var(--gray-bg); }
+    .sidebar { position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:linear-gradient(180deg,var(--maroon-dark) 0%,var(--maroon) 100%);display:flex;flex-direction:column;z-index:1000;transition:transform .3s;overflow-y:auto; }
+    .sidebar-brand { padding:1.5rem 1.2rem 1rem;border-bottom:1px solid rgba(255,255,255,0.12); }
+    .sidebar-brand .logo-circle { width:48px;height:48px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.3);margin-bottom:.6rem; }
+    .sidebar-brand .logo-circle i { color:#fff;font-size:1.4rem; }
+    .sidebar-brand h5 { color:#fff;font-weight:700;letter-spacing:1.5px;margin:0;font-size:1.1rem; }
+    .sidebar-brand small { color:rgba(255,255,255,0.6);font-size:0.75rem; }
+    .sidebar-user { margin:.8rem 1rem;padding:.75rem;background:rgba(255,255,255,0.1);border-radius:10px;display:flex;align-items:center;gap:.75rem; }
+    .sidebar-user .avatar { width:40px;height:40px;border-radius:50%;background:#ffd700;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--maroon-dark);font-size:1rem; }
+    .sidebar-user .info .name { color:#fff;font-size:0.88rem;font-weight:600; }
+    .sidebar-user .info .role { color:rgba(255,255,255,0.6);font-size:0.75rem; }
+    .nav-section-title { color:rgba(255,255,255,0.45);font-size:0.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:1rem 1.2rem .3rem; }
+    .sidebar-nav a { display:flex;align-items:center;gap:.75rem;padding:.65rem 1.2rem;color:rgba(255,255,255,0.75);text-decoration:none;font-size:0.9rem;border-radius:0 25px 25px 0;margin:.1rem .8rem .1rem 0;transition:all .2s; }
+    .sidebar-nav a:hover,.sidebar-nav a.active { background:rgba(255,255,255,0.18);color:#fff; }
+    .sidebar-nav a.active { font-weight:600; }
+    .sidebar-nav a i { font-size:1rem;width:22px; }
+    .sidebar-footer { margin-top:auto;padding:1rem;border-top:1px solid rgba(255,255,255,0.12); }
+    .sidebar-footer a { display:flex;align-items:center;gap:.6rem;color:rgba(255,255,255,0.7);text-decoration:none;font-size:0.88rem;padding:.5rem .8rem;border-radius:8px;transition:background .2s; }
+    .sidebar-footer a:hover { background:rgba(255,255,255,0.1);color:#fff; }
+    .sidebar-overlay { display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:999; }
+    .main-content { margin-left:var(--sidebar-w);min-height:100vh;transition:margin .3s; }
+    .topbar { background:#fff;padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 10px rgba(0,0,0,0.06);position:sticky;top:0;z-index:999; }
+    .topbar .page-title { font-weight:700;font-size:1.1rem;color:#1a1a2e; }
+    .topbar .breadcrumb { font-size:0.78rem;margin:0; }
+    .btn-toggle { display:none;background:none;border:none;font-size:1.4rem;color:#555; }
+    .section-card { background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,0.06); }
+    .table-toolbar { padding:1.2rem 1.5rem;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem; }
+    .table-toolbar h6 { font-weight:700;color:#1a1a2e;margin:0; }
+    .search-box { position:relative;min-width:220px; }
+    .search-box input { border-radius:25px;border:1.5px solid #e0e0e0;padding:.45rem 1rem .45rem 2.2rem;font-size:0.85rem;width:100%; }
+    .search-box input:focus { border-color:var(--maroon);box-shadow:0 0 0 3px rgba(128,0,32,0.1);outline:none; }
+    .search-box .bi-search { position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:#aaa; }
+    .btn-add { background:linear-gradient(135deg,var(--maroon-dark),#c0003a);color:#fff;border:none;border-radius:25px;padding:.45rem 1.2rem;font-size:0.88rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.4rem;transition:transform .15s,box-shadow .15s; }
+    .btn-add:hover { transform:translateY(-1px);box-shadow:0 4px 16px rgba(128,0,32,0.3); }
+    .table { margin:0; }
+    .table thead th { background:var(--gray-bg);font-size:0.78rem;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.5px;border:none;padding:.85rem 1rem; }
+    .table tbody td { font-size:0.88rem;vertical-align:middle;border-color:#f0f0f0;padding:.85rem 1rem; }
+    .table tbody tr:hover { background:#fafafa; }
+    .avatar-sm { width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0; }
+    .btn-icon { width:30px;height:30px;border-radius:8px;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:.85rem;transition:transform .15s; }
+    .btn-icon:hover { transform:scale(1.1); }
+    .btn-edit { background:rgba(13,110,253,0.1);color:#0d6efd; }
+    .btn-delete { background:rgba(220,53,69,0.1);color:#dc3545; }
+    .btn-view { background:rgba(128,0,32,0.1);color:var(--maroon); }
+    .pagination-area { padding:.9rem 1.5rem;border-top:1px solid #f0f0f0; }
+    .modal-header { background:linear-gradient(135deg,var(--maroon-dark),var(--maroon));color:#fff;border:none; }
+    .modal-header .btn-close { filter:invert(1); }
+    .modal-footer { border-top:1px solid #f0f0f0; }
+    .form-label { font-weight:600;font-size:0.83rem;color:#444; }
+    .form-control,.form-select { border-radius:8px;border:1.5px solid #e0e0e0;font-size:0.9rem;padding:.55rem .9rem; }
+    .form-control:focus,.form-select:focus { border-color:var(--maroon);box-shadow:0 0 0 3px rgba(128,0,32,0.12); }
+    .btn-save { background:linear-gradient(135deg,var(--maroon-dark),#c0003a);color:#fff;border:none;border-radius:8px;padding:.55rem 1.5rem;font-weight:600; }
+    .toast-container { position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999; }
+    @media (max-width:991px) { .sidebar{transform:translateX(-100%);} .sidebar.show{transform:translateX(0);} .sidebar-overlay.show{display:block;} .main-content{margin-left:0;} .btn-toggle{display:block;} }
+  </style>
+</head>
+<body>
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo-circle"><i class="bi bi-mortarboard-fill"></i></div>
+    <h5>AMBASEN</h5><small>Sistem Presensi Akademik</small>
+  </div>
+  <div class="sidebar-user">
+    <div class="avatar">AD</div>
+    <div class="info"><div class="name">Administrator</div><div class="role">Admin Sistem</div></div>
+  </div>
+  <div class="nav-section-title">Menu Utama</div>
+  <nav class="sidebar-nav">
+    <a href="dashboard.html"><i class="bi bi-grid-fill"></i> Dashboard</a>
+    <a href="kelola_dosen.html" class="active"><i class="bi bi-person-badge-fill"></i> Kelola Dosen</a>
+    <a href="kelola_mahasiswa.html"><i class="bi bi-people-fill"></i> Kelola Mahasiswa</a>
+    <a href="kelola_matakuliah.html"><i class="bi bi-book-fill"></i> Kelola Mata Kuliah</a>
+    <a href="laporan.html" class="active"><i class="bi bi-bar-chart-fill"></i> Laporan Presensi</a>
+  </nav>
+  <div class="nav-section-title">Lainnya</div>
+  <nav class="sidebar-nav"><a href="#"><i class="bi bi-gear-fill"></i> Pengaturan</a></nav>
+  <div class="sidebar-footer"><a href="../index.html"><i class="bi bi-box-arrow-left"></i> Keluar</a></div>
+</aside>
+<div class="main-content">
+  <div class="topbar">
+    <div class="d-flex align-items-center gap-3">
+      <button class="btn-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+      <div>
+        <div class="page-title">Laporan Presensi</div>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item"><a href="dashboard.html" style="color:var(--maroon);">Dashboard</a></li>
+          <li class="breadcrumb-item active">Laporan Presensi</li>
+        </ol></nav>
+      </div>
+    </div>
+    <button class="btn-add" onclick="exportLaporan()"><i class="bi bi-download"></i> Export Excel</button>
+  </div>
+  <div class="p-3 p-md-4">
+    <div class="d-flex gap-2 flex-wrap mb-3">
+      <select class="form-select form-select-sm" style="width:auto;border-radius:20px;font-size:.82rem;" id="filterProdi" onchange="renderTable()">
+        <option value="">Semua Prodi</option>
+        <option>Teknik Informatika</option><option>Sistem Informasi</option>
+        <option>Teknik Elektro</option><option>Manajemen Informatika</option>
+      </select>
+      <select class="form-select form-select-sm" style="width:auto;border-radius:20px;font-size:.82rem;" id="filterMk" onchange="renderTable()">
+        <option value="">Semua MK</option>
+        <option>Algoritma &amp; Pemrograman</option><option>Basis Data</option>
+        <option>Rekayasa Perangkat Lunak</option><option>Jaringan Komputer</option><option>Sistem Operasi</option>
+      </select>
+      <select class="form-select form-select-sm" style="width:auto;border-radius:20px;font-size:.82rem;" id="filterKehadiran" onchange="renderTable()">
+        <option value="">Semua Kehadiran</option>
+        <option value="tinggi">Tinggi (&ge;80%)</option>
+        <option value="sedang">Sedang (60-79%)</option>
+        <option value="rendah">Rendah (&lt;60%)</option>
+      </select>
+    </div>
+    <div class="section-card">
+      <div class="table-toolbar">
+        <div>
+          <h6><i class="bi bi-bar-chart me-2" style="color:var(--maroon);"></i>Rekap Presensi Mahasiswa</h6>
+          <small class="text-muted" id="totalInfo">Menampilkan 0 data</small>
+        </div>
+        <div class="search-box">
+          <i class="bi bi-search"></i>
+          <input type="text" id="searchInput" placeholder="Cari nama / NIM..." oninput="renderTable()"/>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead><tr><th>#</th><th>Mahasiswa</th><th>NIM</th><th>Prodi</th><th>Mata Kuliah</th><th>Hadir</th><th>Izin</th><th>Alpha</th><th>%</th></tr></thead>
+          <tbody id="dosenTable"></tbody>
+        </table>
+      </div>
+      <div class="pagination-area d-flex align-items-center justify-content-between">
+        <small class="text-muted" id="pageInfo"></small>
+        <div class="d-flex gap-1" id="paginationBtns"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- No add modal for laporan -->
+
+<!-- MODAL Detail -->
+<div class="modal fade" id="modalDetail" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-bar-chart me-2"></i>Detail Presensi</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4" id="detailBody"></div>
+      <div class="modal-footer">
+        <button class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container">
+  <div id="mainToast" class="toast align-items-center border-0" role="alert">
+    <div class="d-flex"><div class="toast-body" id="toastMsg">Berhasil!</div>
+    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const laporanData = [
+    { nama:'Andi Pratama',    nim:'M001', prodi:'Teknik Informatika', mk:'Algoritma & Pemrograman', hadir:14, izin:1, alpha:1, total:16 },
+    { nama:'Andi Pratama',    nim:'M001', prodi:'Teknik Informatika', mk:'Basis Data',              hadir:13, izin:2, alpha:1, total:16 },
+    { nama:'Budi Santoso',    nim:'M002', prodi:'Teknik Informatika', mk:'Algoritma & Pemrograman', hadir:15, izin:0, alpha:1, total:16 },
+    { nama:'Citra Dewi',      nim:'M003', prodi:'Sistem Informasi',   mk:'Rekayasa Perangkat Lunak',hadir:12, izin:1, alpha:3, total:16 },
+    { nama:'Dian Rahmadhani', nim:'M004', prodi:'Teknik Informatika', mk:'Jaringan Komputer',       hadir:9,  izin:2, alpha:5, total:16 },
+    { nama:'Eko Firmansyah',  nim:'M005', prodi:'Sistem Informasi',   mk:'Sistem Operasi',          hadir:7,  izin:1, alpha:8, total:16 },
+    { nama:'Fina Sari',       nim:'M006', prodi:'Teknik Informatika', mk:'Algoritma & Pemrograman', hadir:16, izin:0, alpha:0, total:16 },
+    { nama:'Gilang Wicaksono',nim:'M007', prodi:'Sistem Informasi',   mk:'Basis Data',              hadir:14, izin:1, alpha:1, total:16 },
+    { nama:'Hani Permata',    nim:'M008', prodi:'Teknik Informatika', mk:'Sistem Operasi',          hadir:11, izin:2, alpha:3, total:16 },
+    { nama:'Irfan Hakim',     nim:'M009', prodi:'Sistem Informasi',   mk:'Jaringan Komputer',       hadir:15, izin:0, alpha:1, total:16 },
+    { nama:'Rudi Hartono',    nim:'M015', prodi:'Teknik Elektro',     mk:'Rekayasa Perangkat Lunak',hadir:10, izin:2, alpha:4, total:16 },
+    { nama:'Sari Indah',      nim:'M016', prodi:'Manajemen Informatika', mk:'Sistem Informasi Manajemen', hadir:15, izin:1, alpha:0, total:16 },
+  ];
+  const ROWS = 8; let currentPage = 1;
+  const colors = ['#800020','#0d6efd','#198754','#fd7e14','#6f42c1','#0dcaf0','#d63384','#20c997'];
+  function initials(n) { return n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase(); }
+
+  function getFiltered() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const prodi = document.getElementById('filterProdi').value;
+    const mk = document.getElementById('filterMk').value;
+    const kh = document.getElementById('filterKehadiran').value;
+    return laporanData.filter(r => {
+      const pct = Math.round((r.hadir/r.total)*100);
+      const khOk = !kh || (kh==='tinggi'&&pct>=80) || (kh==='sedang'&&pct>=60&&pct<80) || (kh==='rendah'&&pct<60);
+      return (r.nama.toLowerCase().includes(q)||r.nim.toLowerCase().includes(q)) &&
+        (prodi?r.prodi===prodi:true) && (mk?r.mk===mk:true) && khOk;
+    });
+  }
+
+  function renderTable() {
+    const filtered = getFiltered();
+    const pages = Math.ceil(filtered.length / ROWS) || 1;
+    if (currentPage > pages) currentPage = 1;
+    const start = (currentPage - 1) * ROWS;
+    const slice = filtered.slice(start, start + ROWS);
+    document.getElementById('totalInfo').textContent = `Menampilkan ${filtered.length} rekap`;
+    document.getElementById('pageInfo').textContent = `Halaman ${currentPage} dari ${pages}`;
+    const tb = document.getElementById('dosenTable');
+    tb.innerHTML = '';
+    if (!slice.length) { tb.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4"><i class="bi bi-inbox"></i> Tidak ada data</td></tr>'; }
+    slice.forEach((r, i) => {
+      const idx = laporanData.indexOf(r);
+      const c = colors[idx % colors.length];
+      const pct = Math.round((r.hadir/r.total)*100);
+      const pctC = pct>=80?'#198754':pct>=60?'#fd7e14':'#dc3545';
+      tb.innerHTML += `
+        <tr style="cursor:pointer;" onclick="openDetail(${idx})">
+          <td class="text-muted">${start+i+1}</td>
+          <td><div class="d-flex align-items-center gap-2">
+            <div class="avatar-sm" style="background:${c}20;color:${c};">${initials(r.nama)}</div>
+            <div><div class="fw-semibold" style="font-size:.87rem;">${r.nama}</div><small class="text-muted">${r.nim}</small></div>
+          </div></td>
+          <td style="font-size:.84rem;">${r.nim}</td>
+          <td style="font-size:.84rem;">${r.prodi}</td>
+          <td style="font-size:.84rem;">${r.mk}</td>
+          <td><span class="badge text-bg-success rounded-pill px-2">${r.hadir}</span></td>
+          <td><span class="badge text-bg-warning rounded-pill px-2">${r.izin}</span></td>
+          <td><span class="badge text-bg-danger rounded-pill px-2">${r.alpha}</span></td>
+          <td>
+            <div class="d-flex align-items-center gap-1">
+              <div class="progress flex-grow-1" style="height:6px;width:55px;">
+                <div class="progress-bar" style="width:${pct}%;background:${pctC};"></div>
+              </div>
+              <small style="color:${pctC};font-weight:700;">${pct}%</small>
+            </div>
+          </td>
+        </tr>`;
+    });
+    const pb = document.getElementById('paginationBtns'); pb.innerHTML = '';
+    for (let p = 1; p <= pages; p++) {
+      pb.innerHTML += `<button class="btn btn-sm ${p===currentPage?'text-white':'btn-light'}" style="${p===currentPage?'background:var(--maroon);border-color:var(--maroon);':''}" onclick="goPage(${p})">${p}</button>`;
+    }
+  }
+  function goPage(p) { currentPage = p; renderTable(); }
+
+  const modalDetail = new bootstrap.Modal(document.getElementById('modalDetail'));
+  function openDetail(idx) {
+    const r = laporanData[idx];
+    const pct = Math.round((r.hadir/r.total)*100);
+    const pctC = pct>=80?'#198754':pct>=60?'#fd7e14':'#dc3545';
+    document.getElementById('detailBody').innerHTML = `
+      <div class="mb-3 pb-3" style="border-bottom:1px solid #f0f0f0;">
+        <div class="fw-bold" style="font-size:1rem;">${r.nama} <small class="text-muted fw-normal">(${r.nim})</small></div>
+        <div style="font-size:.83rem;color:#888;">${r.prodi}</div>
+      </div>
+      <div class="mb-3"><div style="font-size:.78rem;color:#888;font-weight:700;text-transform:uppercase;margin-bottom:.4rem;">Mata Kuliah</div>
+        <div style="font-size:.9rem;font-weight:600;">${r.mk}</div></div>
+      <div class="row g-2 mb-3">
+        <div class="col-3 text-center p-2 rounded-2" style="background:rgba(25,135,84,0.08);">
+          <div style="font-size:1.4rem;font-weight:700;color:#198754;">${r.hadir}</div>
+          <div style="font-size:.72rem;color:#888;">Hadir</div>
+        </div>
+        <div class="col-3 text-center p-2 rounded-2" style="background:rgba(253,126,20,0.08);">
+          <div style="font-size:1.4rem;font-weight:700;color:#fd7e14;">${r.izin}</div>
+          <div style="font-size:.72rem;color:#888;">Izin</div>
+        </div>
+        <div class="col-3 text-center p-2 rounded-2" style="background:rgba(220,53,69,0.08);">
+          <div style="font-size:1.4rem;font-weight:700;color:#dc3545;">${r.alpha}</div>
+          <div style="font-size:.72rem;color:#888;">Alpha</div>
+        </div>
+        <div class="col-3 text-center p-2 rounded-2" style="background:${pctC}15;">
+          <div style="font-size:1.4rem;font-weight:700;color:${pctC};">${pct}%</div>
+          <div style="font-size:.72rem;color:#888;">Kehadiran</div>
+        </div>
+      </div>
+      <div class="progress" style="height:10px;border-radius:10px;">
+        <div class="progress-bar" style="width:${pct}%;background:${pctC};border-radius:10px;"></div>
+      </div>
+      <div class="mt-2 text-center" style="font-size:.8rem;color:#888;">${r.hadir} dari ${r.total} pertemuan</div>
+    `;
+    modalDetail.show();
+  }
+
+  function exportLaporan() {
+    showToast('Export Excel berhasil diunduh!', 'success');
+  }
+
+  function showToast(msg, type) {
+    const toast = document.getElementById('mainToast');
+    toast.className = `toast align-items-center border-0 text-bg-${type}`;
+    document.getElementById('toastMsg').textContent = msg;
+    new bootstrap.Toast(toast, { delay:3000 }).show();
+  }
+  function toggleSidebar() { document.getElementById('sidebar').classList.toggle('show'); document.getElementById('overlay').classList.toggle('show'); }
+  function closeSidebar() { document.getElementById('sidebar').classList.remove('show'); document.getElementById('overlay').classList.remove('show'); }
+  renderTable();
+  function toggleSidebar() { document.getElementById('sidebar').classList.toggle('show'); document.getElementById('overlay').classList.toggle('show'); }
+  function closeSidebar() { document.getElementById('sidebar').classList.remove('show'); document.getElementById('overlay').classList.remove('show'); }
+  renderTable();
+</script>
+</body>
+</html>
